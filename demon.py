@@ -24,7 +24,7 @@ cat << "EOF"
 EOF
 
 # Mensagem
-echo "Você foi ownado pelo untw0, não saia daqui se não seu celular vai ser queimado"
+echo "ENTAO QUER DIZER QUE VOCES SAO OS OWNADORES DAS PADOCARIAS .GOV.BR VAO A MERDA, SO DA DEFACE USANDO CLOUD VAZADA! by: untw0"
 
 # Simulação de carregamento
 echo -n "["

